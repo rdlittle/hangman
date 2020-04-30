@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import Button, Canvas, Entry, Frame, Label, StringVar, messagebox
 import random
+from images import Loser, Winner
 
 class Game():
     def __init__(self, parent):
@@ -163,6 +164,8 @@ class Game():
                 self._canvas.create_line(self.drawing[k])
             self._tries += 1
         except StopIteration:
+            self.clear_canvas()
+            l = Loser(self._canvas)
             self.announce("You're dead\nYou're dead\nYou're dead\nAnd not of this world")
             self.new_game()
     
@@ -173,6 +176,11 @@ class Game():
             self.tally['credit'] = 0
         self._credits.set(str(self.tally['credit']))
         
+    def clear_canvas(self):
+        items = self._canvas.find_all()
+        for item in items:
+            self._canvas.delete(item)
+            
     def get_segment(self):
         for k in self.drawing.keys():
             yield k
@@ -198,6 +206,8 @@ class Game():
     def guess_word(self):
         word = self._guessed_word.get().upper()
         if word == self._secret_word:
+            self.clear_canvas()
+            w = Winner(self._canvas)
             self.announce("You're a Winner")
             self.tally['right'] += 1
             self._guessed_word.set('')
@@ -235,9 +245,7 @@ class Game():
             lbl.configure(font='-size 14')
             lbl.grid(column=l+1, row=1, sticky=tk.W, padx=4)
             self._letter_box.append(lbl)
-        items = self._canvas.find_all()
-        for item in items:
-            self._canvas.delete(item)
+        self.clear_canvas()
            
     def use_letter(self, letter, button):
         button.configure(state='disabled')
@@ -256,6 +264,8 @@ class Game():
                 self.tally['wrong'] += 1
                 self._wrong.set(str(self.tally['wrong']))
                 self.reveal()
+                self.clear_canvas()
+                l = Loser(self._canvas)
                 self.announce("You're dead\nYou're dead\nYou're dead\nAnd not of this world")
                 self.new_game()
                 
