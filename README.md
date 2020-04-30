@@ -7,15 +7,15 @@ I need to explain this?
 Requires
 --------
 python 3
-PIL (I think its called pillow now)
+pillow
 
 Installation
 ------------
 You may need to install PIL (or pillow)
 Try
-    pip install -r requirements
+    pip install --user -r requirements
 Or
-    pip install --user PIL or possibly pip install --user pillow
+    pip install --user pillow
 
 To Play
 -------
@@ -25,5 +25,4 @@ Linux:
 python hangman.py 
 
 Windows:
-py -3 hangman.py
-(might just be py instead of py -3)
+py hangman.py
