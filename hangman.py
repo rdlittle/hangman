@@ -241,7 +241,7 @@ class Game():
             text = '_'
             if self._secret_word[l] == '.':
                 text = '.'
-            lbl = Label(self._letters_panel, text='_')
+            lbl = Label(self._letters_panel, text=text)
             lbl.configure(font='-size 14')
             lbl.grid(column=l+1, row=1, sticky=tk.W, padx=4)
             self._letter_box.append(lbl)
