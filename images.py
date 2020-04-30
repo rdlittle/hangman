@@ -1,6 +1,11 @@
 from PIL import Image, ImageTk, ImageSequence
 from tkinter import Canvas, Tk, NW
 
+"""
+To be honest, I had no idea how to animate a gif with tkinter.
+I got the solution from https://www.youtube.com/watch?v=lYIy4nJd7P8
+"""
+
 class Winner:
     def __init__(self, canvas):
         self.canvas = canvas

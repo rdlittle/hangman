@@ -1,28 +1,25 @@
-Cheat the Hangman
-=================
+# Cheat the Hangman
 
-Its a game in which you guess letters in order to reveal the secret word.
-I need to explain this?
+Its a game in which you guess letters in order to reveal the secret word. (I need to explain this?)
 
-Requires
---------
-python 3
+I got the solution on how to animate a gif with tkinter from this video: https://www.youtube.com/watch?v=lYIy4nJd7P8
 
-pillow
+## Requires
+* python 3
+* pillow
 
-Installation
+## Installation
 ------------
-You may need to install PIL (or pillow)
+You may need to install pillow
 
 Try
-    pip install --user -r requirements
+    pip install --user -r requirements.txt
 
 Or
     pip install --user pillow
 
-To Play
--------
-From the command line:
+## To Play
+### From the command line:
 
 Linux:
 
