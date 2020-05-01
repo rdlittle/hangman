@@ -67,7 +67,12 @@ class Game():
         self._letters_panel.grid(column=0, row=0)
         
         self._word_panel.grid_columnconfigure(0, minsize=400)
-        self._word_panel.grid(column=1, row=0, pady=20, sticky=tk.E+tk.W)
+        self._word_panel.grid(column=1, row=0, pady=20)
+        self._word_frame.configure(bg='#00ffaa')
+        self._word_panel.configure(bg='#00ff00')
+        self._canvas_panel.configure(bg='#000af0')
+        self._score_panel.configure(bg='#001111')
+        self._parent.configure(bg='#fe917b')
         
         self._score_panel.grid(column=2,row=0, sticky=tk.E+tk.W)
         
