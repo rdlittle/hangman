@@ -58,7 +58,6 @@ class Game():
         
         self._header_panel = Frame(self._parent)
         self._button_frame = Frame(self._parent)
-        self._button_panel = Frame(self._button_frame)
         self._action_frame = Frame(self._parent)
         
         self._header_panel.grid(column=0, row=0)
@@ -72,8 +71,8 @@ class Game():
         
         self._score_panel.grid(column=2,row=0, sticky=tk.E+tk.W)
         
-        self._button_frame.grid(column=0, row=2, ipady=20)
-        self._button_panel.grid(column=0, row=0, sticky=tk.W+tk.E)
+        self._button_frame.grid(column=0, row=2, ipady=20, sticky=tk.E)
+        self._button_frame.configure(bg='#ff0000')
         
         self._action_frame.configure(height=50)
         self._action_frame.grid(column=0, row=3, pady=20)
@@ -110,7 +109,7 @@ class Game():
                         self._word_list.append(word.strip())
 
         for idx in range(len(self.alphabet)):
-            self._letter_buttons[idx] = Button(self._button_panel, text=self.alphabet[idx])
+            self._letter_buttons[idx] = Button(self._button_frame, text=self.alphabet[idx])
             self._letter_buttons[idx].configure(command = lambda l=self.alphabet[idx],btn=self._letter_buttons[idx]: self.use_letter(l, btn))
             self._letter_buttons[idx].grid(column=idx, row=0, padx=1)
             
