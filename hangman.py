@@ -216,7 +216,7 @@ class Game():
         else:
             self.announce('That\'s not it')
             self._guessed_word.set('')
-            self.tally['credits'] -= 1
+            self.tally['credit'] -= 1
             self._credits.set(str(self.tally['credit']))
     
     def new_game(self):
