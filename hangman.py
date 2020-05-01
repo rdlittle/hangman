@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import Button, Canvas, Entry, Frame, Label, StringVar, messagebox
 import random
-from images import Loser, Winner
+from images import Picture
 
 class Game():
     def __init__(self, parent):
@@ -138,6 +138,13 @@ class Game():
             
     def announce(self, msg):
         messagebox.showinfo(message=msg)
+    
+    def buy_vowel(self):
+        self.toggle_vowel_buttons('normal')
+        self.tally['credit'] -= 1
+        if self.tally['credit'] < 0:
+            self.tally['credit'] = 0
+        self._credits.set(str(self.tally['credit']))
         
     def check_done(self):
         if self._tries == len(self.drawing):
@@ -154,6 +161,11 @@ class Game():
         if c > 0:
             bstate = 'normal'
         self._buy_vowel_button.configure(state=bstate)
+        
+    def clear_canvas(self):
+        items = self._canvas.find_all()
+        for item in items:
+            self._canvas.delete(item)          
             
     def draw_figure(self):
         try:
@@ -165,21 +177,9 @@ class Game():
             self._tries += 1
         except StopIteration:
             self.clear_canvas()
-            l = Loser(self._canvas)
+            l = Picture(self._canvas, 'loser.gif')
             self.announce("You're dead\nYou're dead\nYou're dead\nAnd not of this world")
             self.new_game()
-    
-    def buy_vowel(self):
-        self.toggle_vowel_buttons('normal')
-        self.tally['credit'] -= 1
-        if self.tally['credit'] < 0:
-            self.tally['credit'] = 0
-        self._credits.set(str(self.tally['credit']))
-        
-    def clear_canvas(self):
-        items = self._canvas.find_all()
-        for item in items:
-            self._canvas.delete(item)
             
     def get_segment(self):
         for k in self.drawing.keys():
@@ -207,7 +207,7 @@ class Game():
         word = self._guessed_word.get().upper()
         if word == self._secret_word:
             self.clear_canvas()
-            w = Winner(self._canvas)
+            w = Picture(self._canvas, 'winner.gif')
             self.announce("You're a Winner")
             self.tally['right'] += 1
             self._guessed_word.set('')
@@ -252,12 +252,18 @@ class Game():
         self._used_letters.append(letter)
         self.toggle_vowel_buttons()
         
+        """ Too much code here.  Make this more efficient"""
         if letter in self._secret_word:
             self.tally['credit'] += 1
             self._credits.set(str(self.tally['credit']))
             for l in range(len(self._secret_word)):
                 if self._secret_word[l] == letter:
                     self._letter_box[l].configure(text=letter)
+            if self.check_done():
+                self.clear_canvas()
+                l = Picture(self._canvas, 'winner.gif')
+                self.announce("You're a winner")
+                self.new_game()
         else:
             self.draw_figure()
             if self.check_done():
@@ -265,7 +271,7 @@ class Game():
                 self._wrong.set(str(self.tally['wrong']))
                 self.reveal()
                 self.clear_canvas()
-                l = Loser(self._canvas)
+                l = Picture(self._canvas, 'loser.gif')
                 self.announce("You're dead\nYou're dead\nYou're dead\nAnd not of this world")
                 self.new_game()
                 
