@@ -12,7 +12,7 @@ dk_green = '#569587'
 class Game():
     def __init__(self, parent):
         
-        button_spacing = 2
+        button_spacing = 1
         if sys.platform[:3] == 'win':
             button_spacing = 6
         self.drawing = {
@@ -341,6 +341,7 @@ class Game():
 class GameBoard(tk.Tk):
     def __init__(self, *args, **kwargs):
         super(GameBoard, self).__init__(*args, **kwargs)
+        geo_string = '1000x520+350+100'
         if sys.platform[:3] == 'win':
             geo_string = '790x450+350+100'
         self.geometry(geo_string)
