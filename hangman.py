@@ -3,6 +3,7 @@ from tkinter import Button, Canvas, Entry, Frame, Label, StringVar, messagebox
 import random
 from images import Picture
 import pdb
+import sys
 
 lt_green = '#00ffaa'
 md_green = '#79d1be'
@@ -11,6 +12,9 @@ dk_green = '#569587'
 class Game():
     def __init__(self, parent):
         
+        button_spacing = 2
+        if sys.platform[:3] == 'win':
+            button_spacing = 6
         self.drawing = {
             'base': [100, 199, 200, 199],
             'upright': [150, 20, 150, 200],
@@ -86,14 +90,15 @@ class Game():
         # Place the top-level child frames
         self._header_frame.grid(column=0, row=0, sticky=tk.W+tk.E)
         self._word_frame.grid(column=0, row=1, pady=20, sticky=tk.W+tk.E)
-        self._button_frame.grid(column=0, row=2, ipady=20, sticky=tk.E)
+        self._button_frame.grid(column=0, row=2, ipady=20, sticky=tk.W+tk.E)
         self._action_frame.grid(column=0, row=3, pady=20)
         
         # Place the 2nd level child panels
         self._canvas_panel.grid(column=0, row=0)
         self._word_panel.grid(column=1, row=0)
-        self._letters_panel.grid(column=0, row=0, sticky=tk.E)
         self._score_panel.grid(column=2,row=0)
+        self._letters_panel.grid(column=0, row=0, sticky=tk.E) # child of word_panel
+        
         self._canvas = Canvas(self._canvas_panel, height=200, width=200)
         self._canvas.configure(bg=lt_green,highlightbackground=dk_green)
         self._canvas.grid(column=0, row=1, pady=20, padx=10, sticky=tk.W)
@@ -133,7 +138,7 @@ class Game():
         for idx in range(len(self.alphabet)):
             self._letter_buttons[idx] = Button(self._button_frame, text=self.alphabet[idx])
             self._letter_buttons[idx].configure(command = lambda l=self.alphabet[idx],btn=self._letter_buttons[idx]: self.use_letter(l, btn))
-            self._letter_buttons[idx].grid(column=idx, row=0, padx=1, sticky=tk.N+tk.S)
+            self._letter_buttons[idx].grid(row=0, column=idx, padx=button_spacing)
             
         self._guess_entry = Entry(self._action_frame, textvariable=self._guessed_word)
         self._guess_entry.grid(column=0, row=1, padx=10)
@@ -156,7 +161,7 @@ class Game():
         self._buy_vowel_button
         
         self._credits.trace('w', self.check_credit)
-               
+       
         self.new_game()
             
     def announce(self, winner_loser):
@@ -336,7 +341,9 @@ class Game():
 class GameBoard(tk.Tk):
     def __init__(self, *args, **kwargs):
         super(GameBoard, self).__init__(*args, **kwargs)
-        self.geometry('1000x520+350+100')
+        if sys.platform[:3] == 'win':
+            geo_string = '790x450+350+100'
+        self.geometry(geo_string)
         self.title('Cheat the Hangman')
         Game(self)
         
