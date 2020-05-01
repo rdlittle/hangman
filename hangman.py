@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import Button, Canvas, Entry, Frame, Label, StringVar, messagebox
 import random
 from images import Picture
+import pdb
 
 class Game():
     def __init__(self, parent):
@@ -29,7 +30,8 @@ class Game():
         self.tally = {
             'right': 0,
             'wrong': 0,
-            'credit': 0
+            'credit': 0,
+            'only_vowels': False
         }
         
         self._guessed_word = StringVar()
@@ -76,7 +78,7 @@ class Game():
         self._action_frame.configure(height=50)
         self._action_frame.grid(column=0, row=3, pady=20)
         
-        self._canvas = Canvas(self._canvas_panel, height=200, width=200, highlightthickness=2)
+        self._canvas = Canvas(self._canvas_panel, height=200, width=200)
         self._canvas.grid(column=0, row=1, pady=20, padx=10, sticky=tk.W)
         
         self._header = Label(self._header_panel, text='UniVerse Keywords', font='-size 20', pady=10)
@@ -136,8 +138,25 @@ class Game():
                
         self.new_game()
             
-    def announce(self, msg):
+    def announce(self, winner_loser):
+        self.clear_canvas()
+        if winner_loser not in ['winner', 'loser']:
+            return
+
+        if winner_loser == 'loser':
+            msg = "You're dead\nYou're dead\nYou're dead\nAnd not of this world"
+            image_name = 'loser.gif'
+            self.tally['wrong'] += 1
+            self._wrong.set(str(self.tally['wrong']))
+        else:
+            msg = 'You\'re a winner'
+            image_name = 'winner.gif'
+            self.tally['right'] += 1
+            self._right.set(str(self.tally['right']))
+            
+        l = Picture(self._canvas, image_name)
         messagebox.showinfo(message=msg)
+        self.new_game()
     
     def buy_vowel(self):
         self.toggle_vowel_buttons('normal')
@@ -147,6 +166,12 @@ class Game():
         self._credits.set(str(self.tally['credit']))
         
     def check_done(self):
+        #pdb.set_trace()
+        self.tally['only_vowels'] = True
+        for l in self._secret_word:
+            if l not in self.vowels and l not in self._used_letters:
+                self.tally['only_vowels'] = False
+                break
         if self._tries == len(self.drawing):
             return True
         for lbl in self._letter_box:
@@ -176,10 +201,7 @@ class Game():
                 self._canvas.create_line(self.drawing[k])
             self._tries += 1
         except StopIteration:
-            self.clear_canvas()
-            l = Picture(self._canvas, 'loser.gif')
-            self.announce("You're dead\nYou're dead\nYou're dead\nAnd not of this world")
-            self.new_game()
+            self.announce('loser')
             
     def get_segment(self):
         for k in self.drawing.keys():
@@ -206,18 +228,17 @@ class Game():
     def guess_word(self):
         word = self._guessed_word.get().upper()
         if word == self._secret_word:
-            self.clear_canvas()
-            w = Picture(self._canvas, 'winner.gif')
-            self.announce("You're a Winner")
-            self.tally['right'] += 1
             self._guessed_word.set('')
-            self._right.set(str(self.tally['right']))
-            self.new_game()
+            self.announce('winner')
         else:
-            self.announce('That\'s not it')
+            messagebox.showinfo(message='Wrong!')
             self._guessed_word.set('')
             self.tally['credit'] -= 1
+            '''Should we allow negative credits?'''
             self._credits.set(str(self.tally['credit']))
+            self.draw_figure()
+            if self.check_done():
+                self.announce('loser')
     
     def new_game(self):
         for lbl in self._letter_box:
@@ -229,6 +250,7 @@ class Game():
         self._tries = 0
         self._secret_word = self.get_word()
         self.tally['credit'] = 0
+        self.tally['only_vowels'] = False
         self._credits.set(0)
         
         for idx,btn in self._letter_buttons.items():
@@ -246,34 +268,6 @@ class Game():
             lbl.grid(column=l+1, row=1, sticky=tk.W, padx=4)
             self._letter_box.append(lbl)
         self.clear_canvas()
-           
-    def use_letter(self, letter, button):
-        button.configure(state='disabled')
-        self._used_letters.append(letter)
-        self.toggle_vowel_buttons()
-        
-        """ Too much code here.  Make this more efficient"""
-        if letter in self._secret_word:
-            self.tally['credit'] += 1
-            self._credits.set(str(self.tally['credit']))
-            for l in range(len(self._secret_word)):
-                if self._secret_word[l] == letter:
-                    self._letter_box[l].configure(text=letter)
-            if self.check_done():
-                self.clear_canvas()
-                l = Picture(self._canvas, 'winner.gif')
-                self.announce("You're a winner")
-                self.new_game()
-        else:
-            self.draw_figure()
-            if self.check_done():
-                self.tally['wrong'] += 1
-                self._wrong.set(str(self.tally['wrong']))
-                self.reveal()
-                self.clear_canvas()
-                l = Picture(self._canvas, 'loser.gif')
-                self.announce("You're dead\nYou're dead\nYou're dead\nAnd not of this world")
-                self.new_game()
                 
     def reveal(self):
         for t in range(len(self._secret_word)):
@@ -290,7 +284,32 @@ class Game():
             if self.alphabet[idx] in self.vowels:
                 button.configure(state=set_state)
             else:
-                button.configure(state=cons_state)            
+                button.configure(state=cons_state)   
+    
+    def use_letter(self, letter, button):
+        button.configure(state='disabled')
+        self._used_letters.append(letter)
+        self.toggle_vowel_buttons()
+        
+        #pdb.set_trace()
+        if letter in self._secret_word:
+            self.tally['credit'] += 1
+            self._credits.set(str(self.tally['credit']))
+            for l in range(len(self._secret_word)):
+                if self._secret_word[l] == letter:
+                    self._letter_box[l].configure(text=letter)
+            if self.check_done():
+                self.announce('winner')
+        else:
+            self.draw_figure()
+            if self.check_done():
+                self.reveal()
+                self.announce('loser')
+                
+        if self.tally['only_vowels']:
+            messagebox.showinfo(message="Only vowels remain") 
+            for btn in self._letter_buttons.values():
+                btn.configure(state='disabled')        
     
 
 class GameBoard(tk.Tk):
