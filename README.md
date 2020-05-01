@@ -18,6 +18,9 @@ Try
 Or
     pip install --user pillow
 
+## Known issues
+* On Windows, the letter buttons do not extend the full width of the game board.
+
 ## To Play
 ### From the command line:
 
