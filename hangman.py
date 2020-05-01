@@ -4,6 +4,10 @@ import random
 from images import Picture
 import pdb
 
+lt_green = '#00ffaa'
+md_green = '#79d1be'
+dk_green = '#569587'
+
 class Game():
     def __init__(self, parent):
         
@@ -50,55 +54,68 @@ class Game():
         self._used_letters = []
         self._letter_buttons = {}
         
+        # Define top-level child frames
+        self._header_frame = Frame(self._parent)
         self._word_frame = Frame(self._parent)
-        self._score_panel = Frame(self._word_frame)
-        self._word_panel = Frame(self._word_frame)
-        self._letters_panel = Frame(self._word_panel)
-        self._canvas_panel = Frame(self._word_frame)
-        
-        self._header_panel = Frame(self._parent)
         self._button_frame = Frame(self._parent)
         self._action_frame = Frame(self._parent)
         
-        self._header_panel.grid(column=0, row=0)
+        # Define child panels of word_frame
+        self._canvas_panel = Frame(self._word_frame)
+        self._word_panel = Frame(self._word_frame)
+        self._score_panel = Frame(self._word_frame)
         
-        self._word_frame.grid(column=0, row=1, pady=20)
-        self._canvas_panel.grid(column=0, row=0, pady=20, sticky=tk.E+tk.W)
-        self._letters_panel.grid(column=0, row=0)
+        self._letters_panel = Frame(self._word_panel)
         
-        self._word_panel.grid_columnconfigure(0, minsize=400)
-        self._word_panel.grid(column=1, row=0, pady=20)
-        self._word_frame.configure(bg='#00ffaa')
-        self._word_panel.configure(bg='#00ff00')
-        self._canvas_panel.configure(bg='#000af0')
-        self._score_panel.configure(bg='#001111')
-        self._parent.configure(bg='#fe917b')
+        # Configure the frames and panels
+        self._parent.configure(bg=dk_green)
+        self._header_frame.configure(bg=md_green)
+        self._button_frame.configure(bg='#51c6bd')
+        self._action_frame.configure(height=50, bg=dk_green)
         
-        self._score_panel.grid(column=2,row=0, sticky=tk.E+tk.W)
+        self._word_frame.configure(bg=lt_green)
+        self._letters_panel.configure(bg=lt_green)
+        self._canvas_panel.configure(bg=lt_green)
+        self._score_panel.configure(bg=lt_green)
         
+        self._header_frame.columnconfigure(0, weight=2)
+        self._word_frame.columnconfigure(0, weight=1, uniform='center')
+        self._word_frame.columnconfigure(1, weight=1, uniform='center')
+        self._word_frame.columnconfigure(2, weight=1, uniform='center')
+
+        # Place the top-level child frames
+        self._header_frame.grid(column=0, row=0, sticky=tk.W+tk.E)
+        self._word_frame.grid(column=0, row=1, pady=20, sticky=tk.W+tk.E)
         self._button_frame.grid(column=0, row=2, ipady=20, sticky=tk.E)
-        self._button_frame.configure(bg='#ff0000')
-        
-        self._action_frame.configure(height=50)
         self._action_frame.grid(column=0, row=3, pady=20)
         
+        # Place the 2nd level child panels
+        self._canvas_panel.grid(column=0, row=0)
+        self._word_panel.grid(column=1, row=0)
+        self._letters_panel.grid(column=0, row=0, sticky=tk.E)
+        self._score_panel.grid(column=2,row=0)
         self._canvas = Canvas(self._canvas_panel, height=200, width=200)
+        self._canvas.configure(bg=lt_green,highlightbackground=dk_green)
         self._canvas.grid(column=0, row=1, pady=20, padx=10, sticky=tk.W)
         
-        self._header = Label(self._header_panel, text='UniVerse Keywords', font='-size 20', pady=10)
+        self._header = Label(self._header_frame, text='UniVerse Keywords', font='-size 20')
+        self._header.configure(bg=md_green)
         self._header.grid(column=0, row=0)
         
         self._right_lbl = Label(self._score_panel, text='Right', font='-size 18')
+        self._right_lbl.configure(bg='#00ffaa')
         self._right_holder = Label(self._score_panel)
-        self._right_holder.configure(font='-size 18', textvariable=self._right)
+        self._right_holder.configure(font='-size 18', textvariable=self._right, bg='#00ffaa')
         
         self._wrong_lbl = Label(self._score_panel, text='Wrong', font='-size 18')
+        self._wrong_lbl.configure(bg='#00ffaa')
         self._wrong_holder = Label(self._score_panel)
-        self._wrong_holder.configure(font='-size 18', textvariable=self._wrong)
+        self._wrong_holder.configure(font='-size 18', textvariable=self._wrong, bg='#00ffaa')
         
         self._credit_lbl = Label(self._score_panel, text='Credits', font='-size 18')
+        self._credit_lbl.configure(bg='#00ffaa')
         self._credit_holder = Label(self._score_panel)
-        self._credit_holder.configure(font='-size 18', textvariable=self._credits)
+        self._credit_holder.configure(font='-size 18', textvariable=self._credits, bg='#00ffaa')
         
         self._right_lbl.grid(column=0, row=0, padx=20, sticky=tk.W)
         self._right_holder.grid(column=1, row=0)
@@ -116,7 +133,7 @@ class Game():
         for idx in range(len(self.alphabet)):
             self._letter_buttons[idx] = Button(self._button_frame, text=self.alphabet[idx])
             self._letter_buttons[idx].configure(command = lambda l=self.alphabet[idx],btn=self._letter_buttons[idx]: self.use_letter(l, btn))
-            self._letter_buttons[idx].grid(column=idx, row=0, padx=1)
+            self._letter_buttons[idx].grid(column=idx, row=0, padx=1, sticky=tk.N+tk.S)
             
         self._guess_entry = Entry(self._action_frame, textvariable=self._guessed_word)
         self._guess_entry.grid(column=0, row=1, padx=10)
@@ -232,6 +249,7 @@ class Game():
     def guess_word(self):
         word = self._guessed_word.get().upper()
         if word == self._secret_word:
+            self.reveal()
             self._guessed_word.set('')
             self.announce('winner')
         else:
@@ -268,8 +286,8 @@ class Game():
             if self._secret_word[l] == '.':
                 text = '.'
             lbl = Label(self._letters_panel, text=text)
-            lbl.configure(font='-size 14')
-            lbl.grid(column=l+1, row=1, sticky=tk.W, padx=4)
+            lbl.configure(font='-size 14', bg=lt_green)
+            lbl.grid(column=l+1, row=1, padx=4)
             self._letter_box.append(lbl)
         self.clear_canvas()
                 
@@ -295,7 +313,6 @@ class Game():
         self._used_letters.append(letter)
         self.toggle_vowel_buttons()
         
-        #pdb.set_trace()
         if letter in self._secret_word:
             self.tally['credit'] += 1
             self._credits.set(str(self.tally['credit']))
