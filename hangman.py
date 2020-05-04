@@ -39,7 +39,8 @@ class Game():
             'right': 0,
             'wrong': 0,
             'credit': 0,
-            'only_vowels': False
+            'only_vowels': False,
+            'msg_shown': False
         }
         
         self._guessed_word = StringVar()
@@ -141,6 +142,7 @@ class Game():
             self._letter_buttons[idx].grid(row=0, column=idx, padx=button_spacing)
             
         self._guess_entry = Entry(self._action_frame, textvariable=self._guessed_word)
+        self._guess_entry.bind('<Return>', self.guess_word)
         self._guess_entry.grid(column=0, row=1, padx=10)
         
         self._guess_button = Button(self._action_frame, text='Guess')
@@ -216,7 +218,7 @@ class Game():
     def clear_canvas(self):
         items = self._canvas.find_all()
         for item in items:
-            self._canvas.delete(item)          
+            self._canvas.delete(item)
             
     def draw_figure(self):
         try:
@@ -251,8 +253,10 @@ class Game():
         for btn in self._letter_buttons.values():
             btn.configure(state='disabled')
    
-    def guess_word(self):
+    def guess_word(self, *args):
         word = self._guessed_word.get().upper()
+        if word == '':
+            return
         if word == self._secret_word:
             self.reveal()
             self._guessed_word.set('')
@@ -278,6 +282,7 @@ class Game():
         self._secret_word = self.get_word()
         self.tally['credit'] = 0
         self.tally['only_vowels'] = False
+        self.tally['msg_shown'] = False
         self._credits.set(0)
         
         for idx,btn in self._letter_buttons.items():
@@ -333,9 +338,11 @@ class Game():
                 self.announce('loser')
                 
         if self.tally['only_vowels']:
-            messagebox.showinfo(message="Only vowels remain") 
-            for btn in self._letter_buttons.values():
-                btn.configure(state='disabled')        
+            if not self.tally['msg_shown']:
+                self.tally['msg_shown'] = True
+                messagebox.showinfo(message="Only vowels remain")
+                for btn in self._letter_buttons.values():
+                    btn.configure(state='disabled')
     
 
 class GameBoard(tk.Tk):
