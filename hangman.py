@@ -1,16 +1,50 @@
 import tkinter as tk
-from tkinter import Button, Canvas, Entry, Frame, Label, StringVar, messagebox
+from tkinter import BooleanVar, Button, Canvas, Entry, Frame, Label, StringVar, messagebox
 import random
 from images import Picture
 import pdb
 import sys
 
-lt_green = '#00ffaa'
-md_green = '#79d1be'
-dk_green = '#569587'
+themes = {
+    'sea': {
+        'dark': '#00ffaa',
+        'medium': '#79d1be',
+        'light': '#569587',
+        'offset': '#36da96'
+    },
+    'sky': {
+        'dark': '#00599d',
+        'medium': '#008cf7',
+        'light': '#aaffff',
+        'offset': '#91dada'
+    },
+    'earth': {
+        'dark': '#685038',
+        'medium': '#b48b61',
+        'light': '#ffc58a',
+        'offset': '#c39669'
+    }
+}
+
+theme = themes['sea']
 
 class Game():
     def __init__(self, parent):
+        
+        self.theme_var = StringVar()
+        self.theme_var.trace('w', self.set_theme)
+        
+        main_menu = tk.Menu(parent)
+        
+        theme_menu = tk.Menu(main_menu, tearoff=False)
+
+        theme_menu.add_radiobutton(label='Earth', value='earth', variable=self.theme_var)
+        theme_menu.add_radiobutton(label='Sea', value='sea', variable=self.theme_var)
+        theme_menu.add_radiobutton(label='Sky', value='sky', variable=self.theme_var)
+        
+        main_menu.add_cascade(label="Theme", menu=theme_menu)
+        
+        parent.configure(menu=main_menu)
         
         button_spacing = 1
         if sys.platform[:3] == 'win':
@@ -72,21 +106,12 @@ class Game():
         
         self._letters_panel = Frame(self._word_panel)
         
-        # Configure the frames and panels
-        self._parent.configure(bg=dk_green)
-        self._header_frame.configure(bg=md_green)
-        self._button_frame.configure(bg='#51c6bd')
-        self._action_frame.configure(height=50, bg=dk_green)
-        
-        self._word_frame.configure(bg=lt_green)
-        self._letters_panel.configure(bg=lt_green)
-        self._canvas_panel.configure(bg=lt_green)
-        self._score_panel.configure(bg=lt_green)
-        
         self._header_frame.columnconfigure(0, weight=2)
         self._word_frame.columnconfigure(0, weight=1, uniform='center')
         self._word_frame.columnconfigure(1, weight=1, uniform='center')
         self._word_frame.columnconfigure(2, weight=1, uniform='center')
+        
+        self._action_frame.configure(height=50)
 
         # Place the top-level child frames
         self._header_frame.grid(column=0, row=0, sticky=tk.W+tk.E)
@@ -101,27 +126,22 @@ class Game():
         self._letters_panel.grid(column=0, row=0, sticky=tk.E) # child of word_panel
         
         self._canvas = Canvas(self._canvas_panel, height=200, width=200)
-        self._canvas.configure(bg=lt_green,highlightbackground=dk_green)
         self._canvas.grid(column=0, row=1, pady=20, padx=10, sticky=tk.W)
         
         self._header = Label(self._header_frame, text='UniVerse Keywords', font='-size 20')
-        self._header.configure(bg=md_green)
         self._header.grid(column=0, row=0)
         
         self._right_lbl = Label(self._score_panel, text='Right', font='-size 18')
-        self._right_lbl.configure(bg='#00ffaa')
         self._right_holder = Label(self._score_panel)
-        self._right_holder.configure(font='-size 18', textvariable=self._right, bg='#00ffaa')
+        self._right_holder.configure(font='-size 18', textvariable=self._right)
         
         self._wrong_lbl = Label(self._score_panel, text='Wrong', font='-size 18')
-        self._wrong_lbl.configure(bg='#00ffaa')
         self._wrong_holder = Label(self._score_panel)
-        self._wrong_holder.configure(font='-size 18', textvariable=self._wrong, bg='#00ffaa')
+        self._wrong_holder.configure(font='-size 18', textvariable=self._wrong)
         
         self._credit_lbl = Label(self._score_panel, text='Credits', font='-size 18')
-        self._credit_lbl.configure(bg='#00ffaa')
         self._credit_holder = Label(self._score_panel)
-        self._credit_holder.configure(font='-size 18', textvariable=self._credits, bg='#00ffaa')
+        self._credit_holder.configure(font='-size 18', textvariable=self._credits)
         
         self._right_lbl.grid(column=0, row=0, padx=20, sticky=tk.W)
         self._right_holder.grid(column=1, row=0)
@@ -163,6 +183,15 @@ class Game():
         self._buy_vowel_button
         
         self._credits.trace('w', self.check_credit)
+        try:
+            with open('theme.txt', 'rt') as tfile:
+                t = tfile.readline()
+        except:
+            t = 'sea'
+        with open('theme.txt', 'wt') as tfile:
+            tfile.write(t)
+        
+        self.theme_var.set(t)
        
         self.new_game()
             
@@ -185,7 +214,30 @@ class Game():
         l = Picture(self._canvas, image_name)
         messagebox.showinfo(message=msg)
         self.new_game()
-    
+        
+    def apply_theme(self):
+        global theme
+        self._parent.configure(bg=theme['dark'])
+        self._header_frame.configure(bg=theme['medium'])
+        self._button_frame.configure(bg=theme['offset'])
+        self._action_frame.configure(bg=theme['dark'])
+        
+        self._word_frame.configure(bg=theme['light'])
+        self._letters_panel.configure(bg=theme['light'])
+        self._canvas_panel.configure(bg=theme['light'])
+        self._score_panel.configure(bg=theme['light'])
+        
+        self._canvas.configure(bg=theme['light'],highlightbackground=theme['dark'])
+        self._right_holder.configure(bg=theme['light'])
+        self._wrong_holder.configure(bg=theme['light'])
+        self._credit_holder.configure(bg=theme['light'])
+        self._header.configure(bg=theme['medium'])
+        self._right_lbl.configure(bg=theme['light'])
+        self._wrong_lbl.configure(bg=theme['light'])
+        self._credit_lbl.configure(bg=theme['light'])
+        for lbl in self._letter_box:
+            lbl.configure(bg=theme['light'])
+            
     def buy_vowel(self):
         self.toggle_vowel_buttons('normal')
         self.tally['credit'] -= 1
@@ -272,6 +324,7 @@ class Game():
                 self.announce('loser')
     
     def new_game(self):
+        global theme
         for lbl in self._letter_box:
             lbl.grid_remove()
         self.seg_iterator = self.get_segment()
@@ -296,7 +349,7 @@ class Game():
             if self._secret_word[l] == '.':
                 text = '.'
             lbl = Label(self._letters_panel, text=text)
-            lbl.configure(font='-size 14', bg=lt_green)
+            lbl.configure(font='-size 14', bg=theme['light'])
             lbl.grid(column=l+1, row=1, padx=4)
             self._letter_box.append(lbl)
         self.clear_canvas()
@@ -304,6 +357,16 @@ class Game():
     def reveal(self):
         for t in range(len(self._secret_word)):
             self._letter_box[t].configure(text=self._secret_word[t])
+            
+    def set_theme(self, *args):
+        global theme
+        t = self.theme_var.get().lower()
+        with open('theme.txt', 'wt') as file:
+            file.write(t)
+            
+        if t in themes.keys():
+            theme = themes[t] 
+            self.apply_theme()
             
     def toggle_vowel_buttons(self, set_state='disabled'):
         cons_state = 'normal'
