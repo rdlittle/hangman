@@ -18,9 +18,10 @@ class Game():
         
         theme_menu = tk.Menu(main_menu, tearoff=False)
 
-        theme_menu.add_radiobutton(label='Earth', value='earth', variable=self.theme_var)
-        theme_menu.add_radiobutton(label='Sea', value='sea', variable=self.theme_var)
-        theme_menu.add_radiobutton(label='Sky', value='sky', variable=self.theme_var)
+        for key in themes.keys():
+            theme_menu.add_radiobutton(label=key.capitalize(), value=key, variable=self.theme_var)
+            # theme_menu.add_radiobutton(label='Sea', value='sea', variable=self.theme_var)
+            # theme_menu.add_radiobutton(label='Sky', value='sky', variable=self.theme_var)
         
         main_menu.add_cascade(label="Theme", menu=theme_menu)
         
@@ -199,7 +200,7 @@ class Game():
         global theme
         self._parent.configure(bg=theme['dark'])
         self._header_frame.configure(bg=theme['medium'])
-        self._button_frame.configure(bg=theme['offset'])
+        self._button_frame.configure(bg=theme['accent'])
         self._action_frame.configure(bg=theme['dark'])
         
         self._word_frame.configure(bg=theme['light'])
@@ -391,7 +392,7 @@ class Game():
 class GameBoard(tk.Tk):
     def __init__(self, *args, **kwargs):
         super(GameBoard, self).__init__(*args, **kwargs)
-        geo_string = '1000x520+350+100'
+        geo_string = '1000x475+350+100'
         if sys.platform[:3] == 'win':
             geo_string = '790x450+350+100'
         self.geometry(geo_string)
