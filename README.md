@@ -10,6 +10,8 @@ I got the solution on how to animate a gif with tkinter from this video: https:/
 * Awards one credit toward buying a vowel when a correct letter is guessed
 * Disables all the vowel buttons unless buying a vowel
 * When buying a vowel, temporarily enables the vowel buttons and disables the consonant buttons
+* Keeps track of wins and losses
+* Switchable 4 different color schemes (because why not?).  You can also create your own color schemes
 
 ## Requires
 * python 3

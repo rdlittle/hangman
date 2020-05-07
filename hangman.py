@@ -15,16 +15,12 @@ class Game():
         self.theme_var.trace('w', self.set_theme)
         
         main_menu = tk.Menu(parent)
-        
         theme_menu = tk.Menu(main_menu, tearoff=False)
 
         for key in themes.keys():
             theme_menu.add_radiobutton(label=key.capitalize(), value=key, variable=self.theme_var)
-            # theme_menu.add_radiobutton(label='Sea', value='sea', variable=self.theme_var)
-            # theme_menu.add_radiobutton(label='Sky', value='sky', variable=self.theme_var)
-        
+
         main_menu.add_cascade(label="Theme", menu=theme_menu)
-        
         parent.configure(menu=main_menu)
         
         button_spacing = 1
