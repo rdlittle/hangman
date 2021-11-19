@@ -131,9 +131,15 @@ class Game():
             with open('UV_Reserved_Words.txt', 'rt') as text_file:
                 for word in text_file:
                     if len(word) > 3:
-                        self._word_list.append(word.strip())
+                        word = word.strip()
+                        if word.isalpha():
+                            self._word_list.append(word.strip())
 
         for idx in range(len(self.alphabet)):
+            """
+            Construct a button for each letter of the alphabet
+            The lambda function in the second line binds each letter button to a function
+            """
             self._letter_buttons[idx] = Button(self._button_frame, text=self.alphabet[idx])
             self._letter_buttons[idx].configure(command = lambda l=self.alphabet[idx],btn=self._letter_buttons[idx]: self.use_letter(l, btn))
             self._letter_buttons[idx].grid(row=0, column=idx, padx=button_spacing)
@@ -245,6 +251,9 @@ class Game():
         self._buy_vowel_button.configure(state=bstate)
         
     def clear_canvas(self):
+        """
+        This removes the stick figure from the board
+        """
         items = self._canvas.find_all()
         for item in items:
             self._canvas.delete(item)
@@ -253,18 +262,25 @@ class Game():
         try:
             k = next(self.seg_iterator)
             if k == 'head':
-                self._canvas.create_oval(self.drawing[k])
+                self._canvas.create_oval(self.drawing[k], width=2.0)
             else:
-                self._canvas.create_line(self.drawing[k])
+                self._canvas.create_line(self.drawing[k], width=2.0)
             self._tries += 1
         except StopIteration:
             self.announce('loser')
             
     def get_segment(self):
+        """
+        Generator function to get the next part of the stick figure
+        """
         for k in self.drawing.keys():
             yield k
     
     def get_word(self):
+        """
+        Pick a random word from the list.
+        Move the word into the used_words list.
+        """
         while True:
             if len(self._word_list) == len(self._used_words):
                 return None
