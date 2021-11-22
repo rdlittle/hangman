@@ -29,6 +29,7 @@ Or
     
 Linux Note:
     One additional package is needed
+    
     For Fedora, the package is python3-tkinter-*
         Example:
         sudo dnf -y --user install python3-tkinter-3.10.0-1.fc35.x86_64
