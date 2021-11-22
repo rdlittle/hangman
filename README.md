@@ -26,6 +26,16 @@ Try
 
 Or
     pip install --user pillow
+    
+Linux Note:
+    One additional package is needed
+    For Fedora, the package is python3-tkinter-*
+        Example:
+        sudo dnf -y --user install python3-tkinter-3.10.0-1.fc35.x86_64
+        
+    For Ubuntu, the package is python3-pil.imagetk
+        sudo apt-get install python3-pil.imagetk
+    
 
 ## Known issues
 * On Windows, the letter buttons do not extend the full width of the game board.
