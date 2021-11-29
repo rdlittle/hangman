@@ -28,6 +28,7 @@ Or
     pip install pillow --user
     
 Linux Note:
+
     On a Linux system only, one additional package is needed
     
     For Fedora, the package is python3-tkinter-*
