@@ -25,10 +25,10 @@ Try
     pip install --user -r requirements.txt
 
 Or
-    pip install --user pillow
+    pip install pillow --user
     
 Linux Note:
-    One additional package is needed
+    On a Linux system only, one additional package is needed
     
     For Fedora, the package is python3-tkinter-*
         Example:
